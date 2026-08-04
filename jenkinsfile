@@ -1,0 +1,27 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t portfolio-image .'
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                sh '''
+                docker stop portfolio-container || true
+                docker rm portfolio-container || true
+
+                docker run -d \
+                --name portfolio-container \
+                -p 8081:80 \
+                portfolio-image
+                '''
+            }
+        }
+    }
+}
